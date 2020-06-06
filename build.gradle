@@ -1,18 +1,10 @@
 plugins {
   id "java"
-  id "checkstyle"
   id "application"
   id "pmd"
   id "build-dashboard"
   id "com.github.jakemarsden.git-hooks" version "0.0.2"
   id "com.github.spotbugs" version "4.0.8"
-}
-
-checkstyle {
-  config = rootProject.resources.text.fromFile("checkstyle.xml")
-  toolVersion "8.32"
-  ignoreFailures = false
-  maxWarnings = 0
 }
 
 spotbugs {
@@ -39,6 +31,8 @@ spotbugsTest {
 pmd {
   toolVersion = "6.23.0"
   ignoreFailures = false
+  ruleSets = []
+  ruleSetConfig = resources.text.fromFile("pmd.xml")
 }
 
 pmdMain {
@@ -67,18 +61,36 @@ repositories {
 }
 
 ext {
+  springBootVersion = "2.3.0.RELEASE"
   junitV = "5.6.0"
+  findBugsAnnotationsV = "3.0.1"
 }
 
 dependencies {
+
+  implementation "org.springframework:spring-core:5.2.6.RELEASE"
+  implementation "org.springframework:spring-beans:5.2.6.RELEASE"
+  implementation "org.springframework:spring-context:5.2.6.RELEASE"
+
+
+  testImplementation "org.springframework:spring-test:5.2.6.RELEASE"
+
+  testImplementation "org.mockito:mockito-all:1.10.19"
   testImplementation "org.junit.jupiter:junit-jupiter-api:${junitV}"
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitV}"
+
+
+  implementation "com.google.code.findbugs:findbugs-annotations:${findBugsAnnotationsV}"
 }
 
 application {
-  mainClassName = "io.github.mkdev.App"
+  mainClassName = "io.github.rmuhamedgaliev.App"
 }
 
 test {
   useJUnitPlatform()
+}
+
+compileJava {
+  options.incremental = true
 }

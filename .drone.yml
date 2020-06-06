@@ -7,6 +7,6 @@ steps:
     image: adoptopenjdk/openjdk14:alpine
     volumes:
       - name: cache
-        path: ~/.gradle
+        path: .gradle
     commands:
       - ./gradlew check

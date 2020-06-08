@@ -26,7 +26,7 @@ Output CSV file that meets the following criteria:
 - JDK 14
 - Gradle 6.5
 
-In development used Checkstyle with Google Code convention. Project have git hooks from gradle script.
+Project have git hooks from gradle script.
 
 - pre-commit - start linters
 - pre-push - start linters and tests

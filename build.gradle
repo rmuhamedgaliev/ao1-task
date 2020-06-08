@@ -72,6 +72,12 @@ dependencies {
   implementation "org.springframework:spring-beans:5.2.6.RELEASE"
   implementation "org.springframework:spring-context:5.2.6.RELEASE"
 
+  implementation "org.apache.commons:commons-lang3:3.10"
+
+  implementation "ch.qos.logback:logback-core:1.2.3"
+  implementation "ch.qos.logback:logback-classic:1.2.3"
+  implementation "org.slf4j:slf4j-api:1.7.30"
+
 
   testImplementation "org.springframework:spring-test:5.2.6.RELEASE"
 
@@ -84,10 +90,16 @@ dependencies {
 }
 
 application {
+  applicationDefaultJvmArgs = ['-Dspring.config.location=file:./config/application.properties']
   mainClassName = "io.github.rmuhamedgaliev.App"
 }
 
+applicationDistribution.from("config") {
+  into "config"
+}
+
 test {
+  jvmArgs '-Dspring.config.location=classpath:application.properties'
   useJUnitPlatform()
 }
 

@@ -1,34 +1,60 @@
 package io.github.rmuhamedgaliev;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.rmuhamedgaliev.commands.Command;
 import io.github.rmuhamedgaliev.configuration.CommandConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @Configuration
-@ComponentScan(basePackages = "io.github.rmuhamedgaliev")
 @Import(CommandConfiguration.class)
 public class App {
+  private final static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
   private static HashMap<String, Command> commandRegistry;
 
-  @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
-  @Autowired
-  private App(HashMap<String, Command> commandRegistryBean) {
-    commandRegistry = commandRegistryBean;
-  }
-
+  @SuppressWarnings("unchecked")
   public static void main(String[] args) {
+
+    checkExistsConfigFile();
+
+    ApplicationContext context = new AnnotationConfigApplicationContext(App.class);
+
+    commandRegistry = (HashMap<String, Command>) context.getBean("commandRegistry");
+
     if (args.length > 0) {
       parseCommand(args);
     } else {
-      System.out.println("Invalid command");
+      LOGGER.error("Invalid command. Please use follow commands.\n");
+      commandRegistry.forEach((key, commandx) -> {
+        commandx.printHelp();
+      });
+    }
+  }
+
+  private static void checkExistsConfigFile() {
+    RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+
+    List<String> listOfArguments = runtimeMxBean.getInputArguments();
+
+    String argument = listOfArguments
+      .stream()
+      .filter(argx -> argx.contains("spring.config.location"))
+      .findFirst()
+      .orElse(null);
+
+    if (argument == null) {
+      LOGGER.error("Please set config file path with JVM argument.\nExample: -Dspring.config.location=file:./config/application.properties");
+      System.exit(1);
     }
   }
 
@@ -39,9 +65,10 @@ public class App {
     );
 
     if (command.isPresent()) {
-      System.out.println(command.get().getCommandName());
+      command.get().run();
     } else {
-      System.err.println("Invalid command");
+      LOGGER.error("Invalid command. Please use follow commands.");
+      commandRegistry.forEach((key, commandx) -> commandx.printHelp());
     }
   }
 

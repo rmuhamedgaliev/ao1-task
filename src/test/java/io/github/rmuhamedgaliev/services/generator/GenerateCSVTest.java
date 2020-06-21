@@ -16,8 +16,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class CommonGenerateCSVTest {
-  private final Logger LOGGER = LoggerFactory.getLogger(CommonGenerateCSVTest.class);
+class GenerateCSVTest {
+  private final Logger LOGGER = LoggerFactory.getLogger(GenerateCSVTest.class);
 
   private GenerateService generateService;
   private File testFile;
@@ -37,16 +37,14 @@ class CommonGenerateCSVTest {
   @Test
   public void checkCountOfLinesInGeneratedFile() {
 
-
-
-    try(
+    try (
       BufferedReader bufferedReader = new BufferedReader(
         new FileReader(
           testFile,
           StandardCharsets.UTF_8
         )
-      );
-      ) {
+      )
+    ) {
 
       List<String> fileLines = new ArrayList<>();
 

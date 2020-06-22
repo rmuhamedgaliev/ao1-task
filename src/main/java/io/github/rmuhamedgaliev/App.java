@@ -68,7 +68,7 @@ public class App {
       command.get().run();
     } else {
       LOGGER.error("Invalid command. Please use follow commands.");
-      commandRegistry.forEach((key, commandx) -> commandx.printHelp());
+      commandRegistry.forEach((key, operation) -> operation.printHelp());
     }
   }
 

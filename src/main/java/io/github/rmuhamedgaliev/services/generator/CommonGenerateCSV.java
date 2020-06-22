@@ -1,5 +1,6 @@
 package io.github.rmuhamedgaliev.services.generator;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,9 @@ public class CommonGenerateCSV implements GenerateService {
   private final static Logger LOGGER = LoggerFactory.getLogger(CommonGenerateCSV.class);
 
   private final int COUNT_OF_THREADS = 20;
+
+  private final String FILE_EXTENSION = ".csv";
+
   private final ExecutorService executorService = Executors.newFixedThreadPool(COUNT_OF_THREADS);
 
   private final long csvFileNumberPerLine;
@@ -38,17 +42,17 @@ public class CommonGenerateCSV implements GenerateService {
       IntStream.range(0, countOfFiles).forEach(
         index -> {
           File file = new File(
-            csvFileFolders.getAbsolutePath() + "/" + index + ".csv"
+            csvFileFolders.getAbsolutePath() +
+              File.separator +
+              index + FILE_EXTENSION
           );
           executorService.submit(new CreateFileTask(file, csvFileNumberPerLine));
         }
       );
       executorService.shutdown();
       executorService.awaitTermination(timeOut, TimeUnit.MINUTES);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (InterruptedException | IOException e) {
+      LOGGER.error("Error on generate csv files with exception {}", ExceptionUtils.getStackTrace(e));
     }
   }
 

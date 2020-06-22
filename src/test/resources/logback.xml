@@ -9,6 +9,6 @@
   <logger name="org.springframework" level="error"/>
 
   <root level="debug">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

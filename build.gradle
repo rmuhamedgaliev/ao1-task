@@ -90,7 +90,7 @@ dependencies {
 }
 
 application {
-  applicationDefaultJvmArgs = ['-Dspring.config.location=file:./config/application.properties']
+  applicationDefaultJvmArgs = ["-Dspring.config.location=file:./config/application.properties"]
   mainClassName = "io.github.rmuhamedgaliev.App"
 }
 
@@ -99,7 +99,7 @@ applicationDistribution.from("config") {
 }
 
 test {
-  jvmArgs '-Dspring.config.location=classpath:application.properties'
+  jvmArgs "-Dspring.config.location=classpath:application.properties"
   useJUnitPlatform()
 }
 

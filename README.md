@@ -47,18 +47,37 @@ Follow **gradle** tasks help to work with project:
 For run application run `./gradlew assembleDist` and extract archive to your folder. In config directory change `application.properties` file for your purpose. Example configuration:
 
 ```properties
-//Count of number per file
-app.csv.number-per-line=1
+# Count of duplicates products in list with same ID
+app.products.count-of-duplicates=10
 
-//Path for generated files
+# Count of number per file
+app.csv.number-per-line=100
+
+# Count of generated files
+app.csv.generate.count-of-files=20
+
+# Path for generated files
 app.csv.file-path=/tmp/test
 
-//System timeout in minutes while script stuck
+# Count of threads for process files
+app.csv.file.parallel-threads=10
+
+# Separator symbol for parse CSV
+app.csv.separator=,
+
+# System timeout in minutes while script stuck
 app.csv.timeout-in-minutes=15
+
+# Type of result printer, possible value console or file
+app.printer.type=file
+
+# Name of file for file type printer for store result
+app.printer.file.out=out.csv
 ```  
 
 After you should placed in directory in one layer with `bin`, `config` and `lib`. Then in terminal run command `./bin/ao1-task`.
 
-App have foolow arguments:
+App have follow arguments:
 
 - **generate** - for create csv files
+- **parse** - for parse and sort files with products

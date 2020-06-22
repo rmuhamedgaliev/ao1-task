@@ -79,5 +79,7 @@ After you should placed in directory in one layer with `bin`, `config` and `lib`
 
 App have follow arguments:
 
-- **generate** - for create csv files
-- **parse** - for parse and sort files with products
+- **./bin/ao1-task generate** - for create csv files
+- **./bin/ao1-task parse** - for parse and sort files with products
+
+

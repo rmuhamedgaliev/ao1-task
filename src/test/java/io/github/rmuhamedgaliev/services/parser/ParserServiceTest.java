@@ -1,7 +1,6 @@
 package io.github.rmuhamedgaliev.services.parser;
 
 import io.github.rmuhamedgaliev.model.Product;
-import io.github.rmuhamedgaliev.model.ProductList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,16 +18,10 @@ class ParserServiceTest {
 
     this.csvPrinter = new MockMemoryPrinter();
 
-    ProductList productList = new ProductList(
-      csvPrinter,
-      20
-    );
 
     this.parserService = new CommonParserService(
-      10,
       csvFilePath,
-      ",",
-      productList,
+      this.csvPrinter,
       10
     );
   }
@@ -43,13 +36,7 @@ class ParserServiceTest {
   @Test
   public void checkLowestPriceProduct() {
 
-    String[] pr = new String[]{
-      "994485",
-      "product #994485",
-      "condition #994485",
-      "state #994485",
-      "276.62515"
-    };
+    String pr = "994485,product #994485,condition #994485,state #994485,276.62515";
 
     Product product = Product.of(pr);
 

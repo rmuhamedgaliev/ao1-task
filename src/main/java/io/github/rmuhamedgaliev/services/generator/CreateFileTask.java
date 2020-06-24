@@ -5,7 +5,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,14 +25,11 @@ public class CreateFileTask implements Runnable {
   public void run() {
 
     try (
-      BufferedWriter writer = new BufferedWriter(
-        new FileWriter(
-          outputFile,
-          StandardCharsets.UTF_8
-        )
+      FileWriter writer = new FileWriter(
+        outputFile,
+        StandardCharsets.UTF_8
       )
     ) {
-
       LOGGER.debug("Start generate CSV file {}", outputFile.getAbsoluteFile());
 
       for (int i = 0; i < numberOfLines; i++) {

@@ -3,7 +3,6 @@ package io.github.rmuhamedgaliev.configuration;
 import io.github.rmuhamedgaliev.commands.Command;
 import io.github.rmuhamedgaliev.commands.GenerateCommand;
 import io.github.rmuhamedgaliev.commands.ParseCommand;
-import io.github.rmuhamedgaliev.model.ProductList;
 import io.github.rmuhamedgaliev.services.generator.CommonGenerateCSV;
 import io.github.rmuhamedgaliev.services.generator.GenerateService;
 import io.github.rmuhamedgaliev.services.parser.CSVPrinter;
@@ -35,9 +34,6 @@ public class CommandConfiguration {
 
   @Value("${app.csv.file-path}")
   private String csvFilePath;
-
-  @Value("${app.csv.file.parallel-threads:10}")
-  private int fileParsingParallelThreads;
 
   @Value("${app.csv.separator:,}")
   private String csvSeparator;
@@ -79,11 +75,9 @@ public class CommandConfiguration {
   @Bean
   public ParserService parserService() {
     return new CommonParserService(
-      this.fileParsingParallelThreads,
       this.csvFilePath,
-      this.csvSeparator,
-      productList(),
-      timeOut
+      csvPrinter(),
+      countOfDuplicatesProduct
     );
   }
 
@@ -109,14 +103,6 @@ public class CommandConfiguration {
     };
 
     return csvPrinter;
-  }
-
-  @Bean
-  public ProductList productList() {
-    return new ProductList(
-      csvPrinter(),
-      countOfDuplicatesProduct
-    );
   }
 
   @Bean(name = "parse")

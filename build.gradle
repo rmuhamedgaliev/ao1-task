@@ -4,28 +4,6 @@ plugins {
   id "pmd"
   id "build-dashboard"
   id "com.github.jakemarsden.git-hooks" version "0.0.2"
-  id "com.github.spotbugs" version "4.0.8"
-}
-
-spotbugs {
-  ignoreFailures = false
-  showProgress = true
-}
-
-spotbugsMain {
-  reports {
-    html {
-      enabled = true
-    }
-  }
-}
-
-spotbugsTest {
-  reports {
-    html {
-      enabled = true
-    }
-  }
 }
 
 pmd {
@@ -61,27 +39,30 @@ repositories {
 }
 
 ext {
-  springBootVersion = "2.3.0.RELEASE"
+  springV = "5.2.6.RELEASE"
+  commonsV = "3.10"
+  logbackV = "1.2.3"
+  slf4jV = "1.7.30"
+  mockitoV = "1.10.19"
   junitV = "5.6.0"
   findBugsAnnotationsV = "3.0.1"
 }
 
 dependencies {
 
-  implementation "org.springframework:spring-core:5.2.6.RELEASE"
-  implementation "org.springframework:spring-beans:5.2.6.RELEASE"
-  implementation "org.springframework:spring-context:5.2.6.RELEASE"
+  implementation "org.springframework:spring-core:${springV}"
+  implementation "org.springframework:spring-beans:${springV}"
+  implementation "org.springframework:spring-context:${springV}"
 
-  implementation "org.apache.commons:commons-lang3:3.10"
+  implementation "org.apache.commons:commons-lang3:${commonsV}"
 
-  implementation "ch.qos.logback:logback-core:1.2.3"
-  implementation "ch.qos.logback:logback-classic:1.2.3"
-  implementation "org.slf4j:slf4j-api:1.7.30"
+  implementation "ch.qos.logback:logback-core:${logbackV}"
+  implementation "ch.qos.logback:logback-classic:${logbackV}"
+  implementation "org.slf4j:slf4j-api:${slf4jV}"
 
+  testImplementation "org.springframework:spring-test:${springV}"
 
-  testImplementation "org.springframework:spring-test:5.2.6.RELEASE"
-
-  testImplementation "org.mockito:mockito-all:1.10.19"
+  testImplementation "org.mockito:mockito-all:${mockitoV}"
   testImplementation "org.junit.jupiter:junit-jupiter-api:${junitV}"
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitV}"
 

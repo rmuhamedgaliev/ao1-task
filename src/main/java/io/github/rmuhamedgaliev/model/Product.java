@@ -3,6 +3,7 @@ package io.github.rmuhamedgaliev.model;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 //product ID (integer), Name (string), Condition (string), State (string), Price (float)
 public class Product {
@@ -20,19 +21,15 @@ public class Product {
     this.price = price;
   }
 
-  public static Product of(String[] productElements) {
-    int id = Integer.parseInt(productElements[0]);
-    String name = productElements[1];
-    String condition = productElements[2];
-    String state = productElements[3];
-    Float price = Float.parseFloat(productElements[4]);
+  public static Product of(String productElements) {
+    StringTokenizer st = new StringTokenizer(productElements, ",", false);
 
     return new Product(
-      id,
-      name,
-      condition,
-      state,
-      price
+      Integer.parseInt(st.nextToken()),
+      st.nextToken(),
+      st.nextToken(),
+      st.nextToken(),
+      Float.parseFloat(st.nextToken())
     );
   }
 

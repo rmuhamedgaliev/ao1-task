@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 public class CommonGenerateCSV implements GenerateService {
   private final static Logger LOGGER = LoggerFactory.getLogger(CommonGenerateCSV.class);
 
-  private final int COUNT_OF_THREADS = 20;
+  private final int COUNT_OF_THREADS = 1;
 
   private final String FILE_EXTENSION = ".csv";
 

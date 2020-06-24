@@ -5,7 +5,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -39,13 +38,12 @@ public class FileCSVPrinter implements CSVPrinter {
       FileWriter fw = new FileWriter(
         outFile,
         StandardCharsets.UTF_8
-      );
-      BufferedWriter bw = new BufferedWriter(fw)
+      )
     ) {
       for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
 
         for (Product product : entry.getValue()) {
-          bw.append(product.toCSV(separator));
+          fw.write(product.toCSV(separator));
         }
       }
       LOGGER.info("End write result to file with name {}", outFileName);

@@ -1,8 +1,6 @@
 package io.github.rmuhamedgaliev.services.parser;
 
 import io.github.rmuhamedgaliev.model.Product;
-import io.github.rmuhamedgaliev.model.ProductList;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,110 +10,75 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class CommonParserService implements ParserService {
   private final Logger LOGGER = LoggerFactory.getLogger(CommonParserService.class);
 
-  private final ExecutorService pool;
   private final File csvFileFolder;
-  private final String separator;
-  private final ProductList productList;
-  private final int timeOut;
+  private final CSVPrinter printer;
+  private final int countOfDuplicatesProduct;
 
-  public CommonParserService(int countOfParallelReadFiles, String csvFileFolderPath, String separator, ProductList productList, int timeOut) {
-    this.pool = Executors.newFixedThreadPool(countOfParallelReadFiles);
+  public CommonParserService(String csvFileFolderPath, CSVPrinter printer, int countOfDuplicatesProduct) {
     this.csvFileFolder = new File(csvFileFolderPath);
-    this.separator = separator;
-    this.productList = productList;
-    this.timeOut = timeOut;
+    this.printer = printer;
+    this.countOfDuplicatesProduct = countOfDuplicatesProduct;
   }
 
   @Override
   public void processFiles() {
     LOGGER.info("Start process CSV files");
 
-    try {
-      List<String> fileContents = getFilesContent();
+    List<Product> productStream = new ArrayList<>();
 
-      fileContents.parallelStream().forEach(productLine -> {
-        Product product = Product.of(productLine.split(separator));
-        this.productList.addProduct(product);
+    try (
+      DirectoryStream<Path> stream = Files.newDirectoryStream(csvFileFolder.toPath(), "*.csv")
+    ) {
+      Stream<Path> pathStream = StreamSupport.stream(stream.spliterator(), true);
+
+      List<Product> finalProductStream = productStream;
+      pathStream.forEach(path -> {
+
+        try (Stream<String> lines = Files.lines(path)) {
+          lines
+            .map(Product::of)
+            .forEach(finalProductStream::add);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       });
 
-      this.productList.printSortedByPriceProducts();
+      pathStream.close();
 
-      pool.shutdown();
-      pool.awaitTermination(timeOut, TimeUnit.MINUTES);
+      productStream = productStream.stream().parallel().sorted(Comparator.comparing(Product::getPrice))
+        .collect(Collectors.toList());
 
-      LOGGER.info("End processing CSV file and sort products by price. Please check output file");
+      Map<Integer, List<Product>> resultProducts = new LinkedHashMap<>();
 
-    } catch (InterruptedException e) {
-      LOGGER.error("Error on process CSV files with exception {}", ExceptionUtils.getStackTrace(e));
-    }
-  }
-
-  private List<String> getFilesContent() {
-    List<String> fileContents = new ArrayList<>();
-
-    Set<Future<List<String>>> parseFileTasks = prepareReadFileTasks(csvFileFolder);
-
-    for (Future<List<String>> future : parseFileTasks) {
-      try {
-        fileContents.addAll(future.get());
-      } catch (InterruptedException | ExecutionException e) {
-        LOGGER.error("Error on parse file with exception {}", ExceptionUtils.getStackTrace(e));
-      }
-    }
-
-    return fileContents;
-  }
-
-  private Set<Future<List<String>>> prepareReadFileTasks(File csvFileFolder) {
-    Set<Future<List<String>>> parseFileTasks = new HashSet<>();
-
-    DirectoryStream<Path> stream = null;
-
-    if (csvFileFolder.exists()) {
-      try {
-        stream = Files.newDirectoryStream(csvFileFolder.toPath(), "*.csv");
-
-        for (Path filePath : stream) {
-          Future<List<String>> readFileFuture = this.pool.submit(
-            new ParseFileTask(csvFileFolder, filePath.toFile().getName())
-          );
-
-          parseFileTasks.add(readFileFuture);
-        }
-
-        if (parseFileTasks.size() == 0) {
-          LOGGER.error("Files in folder with csv not exists");
-        }
-
-      } catch (IOException e) {
-        LOGGER.error("Error on read csv files in folder {}", csvFileFolder.toPath());
-      } finally {
-        try {
-          if (stream != null) {
-            stream.close();
+      productStream.stream().parallel().forEachOrdered(product -> {
+        if (resultProducts.get(product.getId()) != null) {
+          List<Product> products = resultProducts.get(product.getId());
+          if (products.size() < countOfDuplicatesProduct) {
+            products.add(product);
           }
-        } catch (IOException e) {
-          LOGGER.error("Can't close list folder files stream wit exception {}", ExceptionUtils.getStackTrace(e));
+        } else {
+          List<Product> products = new ArrayList<>();
+          products.add(product);
+          resultProducts.put(product.getId(), products);
         }
-      }
-    } else {
-      LOGGER.error("Folder with CSV files not exists");
+      });
+
+      printer.printCSV(resultProducts);
+
+    } catch (IOException e) {
+      LOGGER.error("Error on read csv files in folder {}", csvFileFolder.toPath());
     }
-
-
-    return parseFileTasks;
   }
 
 }

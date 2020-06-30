@@ -53,13 +53,14 @@ public class CommandConfiguration {
   @Value("${app.products.count-of-duplicates:20}")
   private int countOfDuplicatesProduct;
 
+  @Value("${app.products.count-of-products:1000}")
+  private int countOfProducts;
+
   @Bean("commandRegistry")
   public HashMap<String, Command> commandRegistry() {
     HashMap<String, Command> commandHashMap = new HashMap<>();
     Collection<Command> commands = applicationContext.getBeansOfType(Command.class).values();
-    commands.forEach(command -> {
-      commandHashMap.put(command.getCommandName(), command);
-    });
+    commands.forEach(command -> commandHashMap.put(command.getCommandName(), command));
 
     return commandHashMap;
   }
@@ -77,7 +78,8 @@ public class CommandConfiguration {
     return new CommonParserService(
       this.csvFilePath,
       csvPrinter(),
-      countOfDuplicatesProduct
+      countOfDuplicatesProduct,
+      countOfProducts
     );
   }
 

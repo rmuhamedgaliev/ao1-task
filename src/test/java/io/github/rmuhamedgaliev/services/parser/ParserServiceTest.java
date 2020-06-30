@@ -11,6 +11,9 @@ class ParserServiceTest {
   private ParserService parserService;
   private MockMemoryPrinter csvPrinter;
 
+  private final static int COUNT_OF_PRODUCTS = 1000;
+  private final static int COUNT_OF_DUPLICATE_PRODUCTS = 20;
+
   @BeforeEach
   void setUp() {
 
@@ -22,7 +25,8 @@ class ParserServiceTest {
     this.parserService = new CommonParserService(
       csvFilePath,
       this.csvPrinter,
-      10
+      COUNT_OF_DUPLICATE_PRODUCTS,
+      COUNT_OF_PRODUCTS
     );
   }
 
@@ -30,7 +34,7 @@ class ParserServiceTest {
   public void checkSortedProductsSize() {
     parserService.processFiles();
 
-    assertEquals(2000, this.csvPrinter.getProductList().size());
+    assertEquals(COUNT_OF_PRODUCTS, this.csvPrinter.getProductList().size());
   }
 
   @Test
@@ -42,6 +46,25 @@ class ParserServiceTest {
 
     parserService.processFiles();
 
-    assertEquals(product, this.csvPrinter.getProductList().get(0));
+    Product firstSortedProduct = this.csvPrinter.getProductList().get(0);
+
+    assertEquals(product, firstSortedProduct);
+
+  }
+
+  @Test
+  public void checkDuplicatesInProducts() {
+
+    int productId = 994485;
+
+    parserService.processFiles();
+
+    long countOfDuplicates = this.csvPrinter.getProductList().parallelStream()
+      .filter(
+        productElement -> productElement.getId() == productId
+      )
+      .count();
+
+    assertEquals(COUNT_OF_DUPLICATE_PRODUCTS, countOfDuplicates);
   }
 }

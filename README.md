@@ -48,13 +48,16 @@ For run application run `./gradlew assembleDist` and extract archive to your fol
 
 ```properties
 # Count of duplicates products in list with same ID
-app.products.count-of-duplicates=10
+app.products.count-of-duplicates=20
+
+# Count of list products
+app.products.count-of-products=1000
 
 # Count of number per file
-app.csv.number-per-line=100
+app.csv.number-per-line=10000
 
 # Count of generated files
-app.csv.generate.count-of-files=20
+app.csv.generate.count-of-files=100
 
 # Path for generated files
 app.csv.file-path=/tmp/test

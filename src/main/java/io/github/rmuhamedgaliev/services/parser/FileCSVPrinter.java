@@ -9,8 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class FileCSVPrinter implements CSVPrinter {
   private final Logger LOGGER = LoggerFactory.getLogger(FileCSVPrinter.class);
@@ -24,7 +23,7 @@ public class FileCSVPrinter implements CSVPrinter {
   }
 
   @Override
-  public void printCSV(Map<Integer, List<Product>> products) {
+  public void printCSV(Set<Product> products) {
 
     File outFile = null;
 
@@ -40,11 +39,8 @@ public class FileCSVPrinter implements CSVPrinter {
         StandardCharsets.UTF_8
       )
     ) {
-      for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-
-        for (Product product : entry.getValue()) {
-          fw.write(product.toCSV(separator));
-        }
+      for (Product product : products) {
+        fw.write(product.toCSV(separator));
       }
       LOGGER.info("End write result to file with name {}", outFileName);
     } catch (IOException e) {

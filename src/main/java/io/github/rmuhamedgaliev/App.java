@@ -22,27 +22,6 @@ public class App {
 
   private static HashMap<String, Command> commandRegistry;
 
-//  public static void main(String[] args) {
-//    ParserService parserService = new CommonParserService(
-//      10,
-//      "/tmp/test",
-////      this.csvSeparator,
-//      10
-//    );
-//
-//    Runtime runtime = Runtime.getRuntime();
-//
-//    while(true) {
-//      parserService.processFiles();
-////      System.gc();
-//      float usage = (float) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
-//      System.out.println("Used memory: " + usage + "Mb");
-//
-//    }
-//
-//
-//  }
-
   @SuppressWarnings("unchecked")
   public static void main(String[] args) {
 
@@ -56,9 +35,7 @@ public class App {
       parseCommand(args);
     } else {
       LOGGER.error("Invalid command. Please use follow commands.\n");
-      commandRegistry.forEach((key, commandx) -> {
-        commandx.printHelp();
-      });
+      commandRegistry.forEach((key, command) -> command.printHelp());
     }
   }
 
@@ -69,7 +46,7 @@ public class App {
 
     String argument = listOfArguments
       .stream()
-      .filter(argx -> argx.contains("spring.config.location"))
+      .filter(args -> args.contains("spring.config.location"))
       .findFirst()
       .orElse(null);
 

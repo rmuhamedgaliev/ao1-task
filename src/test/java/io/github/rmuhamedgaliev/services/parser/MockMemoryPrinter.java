@@ -4,20 +4,18 @@ import io.github.rmuhamedgaliev.model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class MockMemoryPrinter implements CSVPrinter {
 
-  private final List<Product> productList = new ArrayList<>();
+  private final List<Product> productSet = new ArrayList<>();
 
   @Override
-  public void printCSV(Map<Integer, List<Product>> products) {
-    for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-      productList.addAll(entry.getValue());
-    }
+  public void printCSV(Set<Product> products) {
+    productSet.addAll(products);
   }
 
   public List<Product> getProductList() {
-    return this.productList;
+    return this.productSet;
   }
 }
